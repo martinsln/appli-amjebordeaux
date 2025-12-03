@@ -112,7 +112,7 @@ export default function HomeScreen() {
   };
 
   const handleViewAllStudies = () => {
-    router.push('/studies');
+    router.push('/(tabs)/all_etudes');
   };
 
   const deleteStudy = useCallback(async (studyToDelete: Study) => {
