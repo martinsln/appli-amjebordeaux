@@ -1,8 +1,8 @@
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
 import { colors, textStyles } from '@/styles/commonStyles';
+import { useMemo, useState } from 'react';
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 interface PieChartData {
   label: string;
@@ -17,18 +17,19 @@ interface PieChartProps {
   showLabels?: boolean;
 }
 
-export default function PieChart({ 
-  data, 
-  size = 200, 
-  strokeWidth = 2, 
-  showLabels = true 
+export default function PieChart({
+  data,
+  size = 200,
+  strokeWidth = 2,
+  showLabels = true,
 }: PieChartProps) {
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const radius = (size - strokeWidth) / 2;
   const center = size / 2;
-  
+
   // Calculate total value
   const total = data.reduce((sum, item) => sum + item.value, 0);
-  
+
   if (total === 0) {
     return (
       <View style={[styles.container, { width: size, height: size }]}>
@@ -38,20 +39,23 @@ export default function PieChart({
       </View>
     );
   }
-  
+
   // Calculate angles for each segment
   let currentAngle = -90; // Start from top
-  const segments = data.map(item => {
-    const angle = (item.value / total) * 360;
-    const segment = {
-      ...item,
-      startAngle: currentAngle,
-      endAngle: currentAngle + angle,
-      angle,
-    };
-    currentAngle += angle;
-    return segment;
-  });
+  const segments = useMemo(() => {
+    return data.map(item => {
+      const angle = (item.value / total) * 360;
+      const segment = {
+        ...item,
+        startAngle: currentAngle,
+        endAngle: currentAngle + angle,
+        angle,
+      };
+      currentAngle += angle;
+      return segment;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, total]);
 
   // Create SVG path for each segment
   const createPath = (startAngle: number, endAngle: number) => {
@@ -70,20 +74,40 @@ export default function PieChart({
 
   return (
     <View style={styles.container}>
-      <View style={styles.chartContainer}>
-        <Svg width={size} height={size}>
-          {segments.map((segment, index) => (
-            <Path
-              key={index}
-              d={createPath(segment.startAngle, segment.endAngle)}
-              fill={segment.color}
-              stroke={colors.card}
-              strokeWidth={strokeWidth}
-            />
-          ))}
-        </Svg>
-      </View>
-      
+      <TouchableWithoutFeedback onPress={() => setActiveLabel(null)}>
+        <View style={styles.chartContainer}>
+          <Svg width={size} height={size}>
+            {segments.map((segment, index) => (
+              <Path
+                key={index}
+                d={createPath(segment.startAngle, segment.endAngle)}
+                fill={segment.color}
+                stroke={colors.card}
+                strokeWidth={strokeWidth}
+                onPress={() =>
+                  setActiveLabel((prev) => (prev === segment.label ? null : segment.label))
+                }
+                onPressIn={() =>
+                  setActiveLabel((prev) => (prev === segment.label ? null : segment.label))
+                }
+                // @ts-expect-error web hover support
+                onMouseEnter={() => setActiveLabel(segment.label)}
+                onMouseLeave={() => setActiveLabel(null)}
+                opacity={activeLabel === null || activeLabel === segment.label ? 1 : 0.5}
+              />
+            ))}
+          </Svg>
+          {activeLabel && (
+            <View style={styles.centerLabel}>
+              <Text style={[textStyles.caption, styles.centerLabelText]}>Étude</Text>
+              <Text style={[textStyles.h3, styles.centerLabelValue]} numberOfLines={2}>
+                {activeLabel}
+              </Text>
+            </View>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+
       {showLabels && (
         <View style={styles.legend}>
           {segments.map((segment, index) => (
@@ -114,6 +138,9 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     marginBottom: 16,
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyChart: {
     borderRadius: 100,
@@ -122,6 +149,19 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  centerLabel: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  centerLabelText: {
+    color: colors.textSecondary,
+    marginBottom: 4,
+  },
+  centerLabelValue: {
+    textAlign: 'center',
   },
   legend: {
     alignItems: 'flex-start',

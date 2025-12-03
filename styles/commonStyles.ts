@@ -165,10 +165,10 @@ export const commonStyles = StyleSheet.create({
 });
 
 const statusColorMap: Record<StudyStatus, string> = {
-  en_cours: '#FFC107',  // Amber for in-progress
-  livre: '#2196F3',     // Blue for delivered
-  facture: '#9C27B0',   // Purple for invoiced
-  clos: '#4CAF50',      // Green for closed
+  en_cours: '#355C9C',  // Bleu profond
+  livre: '#4F8EC9',     // Bleu clair chaud
+  facture: '#E9C46A',   // Jaune doré pastel
+  clos: '#6ABF69',      // Vert pastel
 };
 
 const statusIconMap: Record<StudyStatus, string> = {

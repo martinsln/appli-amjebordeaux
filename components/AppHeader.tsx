@@ -18,6 +18,7 @@ export default function AppHeader({
   actionActive = false,
 }: AppHeaderProps) {
   const isActionDisabled = !onActionPress && !actionActive;
+  const showAction = !!actionLabel && actionLabel.trim().length > 0;
 
   return (
     <View style={styles.container}>
@@ -29,26 +30,28 @@ export default function AppHeader({
         <Image source={logoSource} style={styles.logo} resizeMode="contain" />
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={onActionPress}
-        activeOpacity={0.8}
-        disabled={isActionDisabled}
-        style={[
-          styles.actionButton,
-          actionActive && styles.actionButtonActive,
-          isActionDisabled && styles.actionButtonDisabled,
-        ]}
-      >
-        <Text
+      {showAction && (
+        <TouchableOpacity
+          onPress={onActionPress}
+          activeOpacity={0.8}
+          disabled={isActionDisabled}
           style={[
-            textStyles.caption,
-            styles.actionText,
-            actionActive && styles.actionTextActive,
+            styles.actionButton,
+            actionActive && styles.actionButtonActive,
+            isActionDisabled && styles.actionButtonDisabled,
           ]}
         >
-          {actionLabel}
-        </Text>
-      </TouchableOpacity>
+          <Text
+            style={[
+              textStyles.caption,
+              styles.actionText,
+              actionActive && styles.actionTextActive,
+            ]}
+          >
+            {actionLabel}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

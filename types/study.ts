@@ -10,10 +10,10 @@ export interface Study {
 }
 
 export const STUDY_STATUS_LABELS: Record<StudyStatus, string> = {
-  en_cours: 'En cours ⏳',
-  livre: 'Livré 📦',
-  facture: 'Facturé 💰',
-  clos: 'Clos ✅',
+  en_cours: 'En cours',
+  livre: 'Livré',
+  facture: 'Facturé',
+  clos: 'Clos',
 };
 
 export const normalizeStatus = (status?: string | null): StudyStatus => {
