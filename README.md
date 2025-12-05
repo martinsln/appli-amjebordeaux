@@ -45,3 +45,4 @@ Using Supabase Realtime to:
 	•	Recompute KPIs live
 	•	Reflect deletions/updates across all devices without reload
 
+current goals : trying to set up google authentication and ia automation to fill the differents documents used through studies
